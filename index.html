@@ -6,6 +6,7 @@
     <title>CardioHelp - Sistema de Monitoreo Cardiovascular</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -13,7 +14,7 @@
         <div id="loginScreen" class="screen active">
             <div class="login-container">
                 <div class="login-box">
-                    <h1>CardioHelp</h1>
+                    <h1>💓 CardioHelp</h1>
                     <p class="subtitle">Sistema de Monitoreo Cardiovascular</p>
                     
                     <form id="loginForm" onsubmit="handleLogin(event)">
@@ -31,15 +32,24 @@
                     </form>
                     
                     <div class="test-accounts">
-                        <h3>Cuentas de Prueba:</h3>
+                        <h3>📋 Cuentas de Prueba:</h3>
                         <div class="account-info">
-                            <strong>Médico:</strong> doctor1 / 1234
+                            <strong>👨‍⚕️ Médico 1:</strong> medico1 / 123456
                         </div>
                         <div class="account-info">
-                            <strong>Paciente:</strong> patient1 / 1234
+                            <strong>👨‍⚕️ Médico 2:</strong> medico2 / password123
                         </div>
                         <div class="account-info">
-                            <strong>Administrador:</strong> admin / 1234
+                            <strong>👤 Paciente 1:</strong> paciente1 / 123456
+                        </div>
+                        <div class="account-info">
+                            <strong>👤 Paciente 2:</strong> paciente2 / secure456
+                        </div>
+                        <div class="account-info">
+                            <strong>🔐 Administrador:</strong> admin / admin123
+                        </div>
+                        <div class="account-info">
+                            <strong>👨‍⚕️ Asistente:</strong> asistente / 123456
                         </div>
                     </div>
                     
@@ -52,7 +62,7 @@
         <div id="dashboard" class="screen">
             <nav class="navbar">
                 <div class="nav-left">
-                    <h2>CardioHelp</h2>
+                    <h2>💓 CardioHelp</h2>
                     <span id="userGreeting"></span>
                 </div>
                 <div class="nav-right">
@@ -63,47 +73,42 @@
             <div class="dashboard-container">
                 <!-- Sidebar Navigation -->
                 <aside class="sidebar">
-                    <div id="menuMedico" class="menu-section">
-                        <h3>Médico</h3>
+                    <div id="menuMedico" class="menu-section" style="display:none;">
+                        <h3>👨‍⚕️ Médico</h3>
                         <button class="menu-btn" onclick="switchView('pacientes')">Mis Pacientes</button>
+                        <button class="menu-btn" onclick="switchView('monitoreo')">Monitoreo</button>
                         <button class="menu-btn" onclick="switchView('alertas')">Alertas</button>
-                        <button class="menu-btn" onclick="switchView('reportes')">Reportes</button>
                     </div>
                     
-                    <div id="menuPaciente" class="menu-section">
-                        <h3>Paciente</h3>
+                    <div id="menuPaciente" class="menu-section" style="display:none;">
+                        <h3>👤 Paciente</h3>
                         <button class="menu-btn" onclick="switchView('misDatos')">Mis Datos</button>
-                        <button class="menu-btn" onclick="switchView('registros')">Registros</button>
+                        <button class="menu-btn" onclick="switchView('registros')">Mis Registros</button>
+                        <button class="menu-btn" onclick="switchView('expediente')">Expediente Médico</button>
                         <button class="menu-btn" onclick="switchView('recordatorios')">Recordatorios</button>
                         <button class="menu-btn" onclick="switchView('exportar')">Exportar Datos</button>
                     </div>
                     
-                    <div id="menuAdmin" class="menu-section">
-                        <h3>Administrador</h3>
+                    <div id="menuAsistente" class="menu-section" style="display:none;">
+                        <h3>👨‍⚕️ Asistente</h3>
+                        <button class="menu-btn" onclick="switchView('pacientes')">Mis Pacientes</button>
+                        <button class="menu-btn" onclick="switchView('registrarVitales')">Registrar Vitales</button>
+                        <button class="menu-btn" onclick="switchView('recordatorios')">Recordatorios</button>
+                    </div>
+                    
+                    <div id="menuAdmin" class="menu-section" style="display:none;">
+                        <h3>🔐 Administrador</h3>
                         <button class="menu-btn" onclick="switchView('usuarios')">Gestionar Usuarios</button>
                         <button class="menu-btn" onclick="switchView('auditoria')">Auditoría</button>
+                        <button class="menu-btn" onclick="switchView('sistema')">Sistema</button>
                     </div>
                 </aside>
                 
                 <!-- Main Content Area -->
                 <main class="main-content">
-                    <!-- View: Pacientes (Doctor) -->
-                    <div id="view-pacientes" class="view active">
-                        <h2>Mis Pacientes</h2>
-                        <div class="patients-list" id="patientsList">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- View: Paciente Detail -->
-                    <div id="view-pacienteDetail" class="view">
-                        <button class="btn btn-secondary" onclick="switchView('pacientes')">← Volver</button>
-                        <div id="patientDetailContent"></div>
-                    </div>
-                    
                     <!-- View: Mis Datos (Patient) -->
                     <div id="view-misDatos" class="view">
-                        <h2>Mis Datos de Salud</h2>
+                        <h2>📊 Mis Datos de Salud</h2>
                         <div class="patient-info">
                             <div class="info-card">
                                 <h3>Información Personal</h3>
@@ -130,15 +135,33 @@
                             </div>
                             
                             <div class="chart-card">
-                                <h3>Estado de Riesgo</h3>
-                                <div id="riskStatusChart"></div>
+                                <h3>📈 Resumen de Mediciones</h3>
+                                <div id="summaryStats"></div>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- View: Mis Pacientes (Doctor) -->
+                    <div id="view-pacientes" class="view">
+                        <h2>👥 Mis Pacientes</h2>
+                        <div id="patientsList" class="patients-list"></div>
+                    </div>
+                    
+                    <!-- View: Monitoreo (Doctor) -->
+                    <div id="view-monitoreo" class="view">
+                        <h2>📉 Monitoreo General</h2>
+                        <div class="charts-container">
+                            <div class="chart-card">
+                                <h3>Presión Arterial - Todos los Pacientes</h3>
+                                <canvas id="allPatientsChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="patientStatsContainer"></div>
+                    </div>
+                    
                     <!-- View: Registros (Patient) -->
                     <div id="view-registros" class="view">
-                        <h2>Mis Registros</h2>
+                        <h2>📋 Mis Registros</h2>
                         <div class="filters">
                             <input type="date" id="filterDate" onchange="filterRegistros()">
                             <select id="filterType" onchange="filterRegistros()">
@@ -146,44 +169,109 @@
                                 <option value="presion">Presión Arterial</option>
                                 <option value="frecuencia">Frecuencia Cardíaca</option>
                                 <option value="peso">Peso</option>
+                                <option value="temperatura">Temperatura</option>
                             </select>
                         </div>
                         <div id="registrosList" class="registros-list"></div>
                     </div>
                     
+                    <!-- View: Expediente Médico -->
+                    <div id="view-expediente" class="view">
+                        <h2>📄 Expediente Médico</h2>
+                        <div id="expedienteContent"></div>
+                    </div>
+                    
                     <!-- View: Recordatorios (Patient) -->
                     <div id="view-recordatorios" class="view">
-                        <h2>Mis Recordatorios</h2>
+                        <h2>⏰ Mis Recordatorios</h2>
                         <button class="btn btn-primary" onclick="openReminderModal()">+ Crear Recordatorio</button>
                         <div id="remindersList" class="reminders-list"></div>
                     </div>
                     
                     <!-- View: Exportar (Patient) -->
                     <div id="view-exportar" class="view">
-                        <h2>Exportar Datos</h2>
+                        <h2>💾 Exportar Datos</h2>
                         <div class="export-options">
-                            <button class="btn btn-primary" onclick="exportPDF()">Descargar PDF</button>
-                            <button class="btn btn-primary" onclick="exportCSV()">Descargar CSV</button>
+                            <div class="export-card">
+                                <h3>📄 PDF</h3>
+                                <p>Descarga tu reporte médico completo en PDF</p>
+                                <button class="btn btn-primary" onclick="exportPDF()">Descargar PDF</button>
+                            </div>
+                            <div class="export-card">
+                                <h3>📊 Excel</h3>
+                                <p>Descarga tus datos en formato Excel</p>
+                                <button class="btn btn-primary" onclick="exportExcel()">Descargar Excel</button>
+                            </div>
+                            <div class="export-card">
+                                <h3>📋 CSV</h3>
+                                <p>Descarga tus datos en formato CSV</p>
+                                <button class="btn btn-primary" onclick="exportCSV()">Descargar CSV</button>
+                            </div>
+                            <div class="export-card">
+                                <h3>📑 JSON</h3>
+                                <p>Descarga tus datos en formato JSON</p>
+                                <button class="btn btn-primary" onclick="exportJSON()">Descargar JSON</button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- View: Alertas (Doctor) -->
                     <div id="view-alertas" class="view">
-                        <h2>Alertas del Sistema</h2>
+                        <h2>⚠️ Alertas del Sistema</h2>
                         <div id="alertsList" class="alerts-list"></div>
+                    </div>
+                    
+                    <!-- View: Registrar Vitales (Assistant) -->
+                    <div id="view-registrarVitales" class="view">
+                        <h2>📝 Registrar Vitales</h2>
+                        <form id="vitalsForm" onsubmit="saveVitals(event)">
+                            <div class="form-group">
+                                <label>Seleccionar Paciente:</label>
+                                <select id="selectPatient" required>
+                                    <option value="">-- Seleccione un paciente --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Presión Arterial Sistólica (mmHg):</label>
+                                <input type="number" id="systolic" min="60" max="200" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Presión Arterial Diastólica (mmHg):</label>
+                                <input type="number" id="diastolic" min="40" max="130" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Frecuencia Cardíaca (bpm):</label>
+                                <input type="number" id="heartRate" min="40" max="150" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Peso (kg):</label>
+                                <input type="number" id="weight" min="30" max="250" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Temperatura (°C):</label>
+                                <input type="number" id="temperature" min="35" max="42" step="0.1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Guardar Vitales</button>
+                        </form>
                     </div>
                     
                     <!-- View: Usuarios (Admin) -->
                     <div id="view-usuarios" class="view">
-                        <h2>Gestionar Usuarios</h2>
+                        <h2>👥 Gestionar Usuarios</h2>
                         <button class="btn btn-primary" onclick="openUserModal()">+ Agregar Usuario</button>
                         <div id="usersList" class="users-list"></div>
                     </div>
                     
                     <!-- View: Auditoría (Admin) -->
                     <div id="view-auditoria" class="view">
-                        <h2>Registro de Auditoría</h2>
+                        <h2>📋 Registro de Auditoría</h2>
                         <div id="auditList" class="audit-list"></div>
+                    </div>
+                    
+                    <!-- View: Sistema (Admin) -->
+                    <div id="view-sistema" class="view">
+                        <h2>⚙️ Configuración del Sistema</h2>
+                        <div id="sistemInfo"></div>
                     </div>
                 </main>
             </div>
@@ -198,7 +286,7 @@
             <form id="reminderForm" onsubmit="saveReminder(event)">
                 <div class="form-group">
                     <label>Descripción:</label>
-                    <input type="text" id="reminderDesc" required>
+                    <input type="text" id="reminderDesc" required placeholder="Ej: Tomar medicamento">
                 </div>
                 <div class="form-group">
                     <label>Fecha:</label>
@@ -208,11 +296,51 @@
                     <label>Hora:</label>
                     <input type="time" id="reminderTime" required>
                 </div>
+                <div class="form-group">
+                    <label>Recurrencia:</label>
+                    <select id="reminderRecurrence">
+                        <option value="once">Una sola vez</option>
+                        <option value="daily">Diariamente</option>
+                        <option value="weekly">Semanalmente</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </form>
         </div>
     </div>
     
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('userModal')">&times;</span>
+            <h2>Gestionar Usuario</h2>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <div class="form-group">
+                    <label>Usuario:</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Rol:</label>
+                    <select id="newUserRole" required>
+                        <option value="doctor">Médico</option>
+                        <option value="patient">Paciente</option>
+                        <option value="assistant">Asistente</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nombre Completo:</label>
+                    <input type="text" id="newUserName" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
